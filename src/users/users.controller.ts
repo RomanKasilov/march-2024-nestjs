@@ -29,15 +29,7 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @ApiBearerAuth()
-  @ApiForbiddenResponse({ description: 'Forbidden' })
-  @ApiNotFoundResponse({ description: 'User not found' })
   @ApiConflictResponse({ description: 'Conflict' })
-  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
-  @ApiOperation({
-    summary: 'Create user',
-    description: 'Create a new user',
-    // deprecated: true,
-  })
   @Post()
   create(@Body() dto: UserCreateReqDto) {
     return this.usersService.create(dto);

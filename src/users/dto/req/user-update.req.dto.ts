@@ -1,5 +1,8 @@
-import { PartialType } from '@nestjs/mapped-types';
+import { OmitType } from '@nestjs/swagger';
 
-import { UserCreateReqDto } from './user-create.req.dto';
+import { UserBaseReqDto } from './user-base.req.dto';
 
-export class UserUpdateReqDto extends PartialType(UserCreateReqDto) {}
+export class UserUpdateReqDto extends OmitType(UserBaseReqDto, [
+  'email',
+  'role',
+]) {}
