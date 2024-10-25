@@ -18,9 +18,9 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 
-import { UserCreateReqDto } from './dto/req/user-create.req.dto';
-import { UserQueryListReqDto } from './dto/req/user-query-list.req.dto';
-import { UserUpdateReqDto } from './dto/req/user-update.req.dto';
+import { UserCreateReqDto } from './models/dto/req/user-create.req.dto';
+import { UserQueryListReqDto } from './models/dto/req/user-query-list.req.dto';
+import { UserUpdateReqDto } from './models/dto/req/user-update.req.dto';
 import { UsersService } from './users.service';
 
 @ApiTags('users')
@@ -32,6 +32,7 @@ export class UsersController {
   @ApiConflictResponse({ description: 'Conflict' })
   @Post()
   create(@Body() dto: UserCreateReqDto) {
+    console.log(dto.email);
     return this.usersService.create(dto);
   }
 
