@@ -13,7 +13,7 @@ import { ApiBearerAuth, ApiConflictResponse, ApiTags } from '@nestjs/swagger';
 import { UserCreateReqDto } from './models/dto/req/user-create.req.dto';
 import { UserQueryListReqDto } from './models/dto/req/user-query-list.req.dto';
 import { UserUpdateReqDto } from './models/dto/req/user-update.req.dto';
-import { UsersService } from './users.service';
+import { UsersService } from './services/users.service';
 
 @ApiTags('users')
 @Controller('users')
