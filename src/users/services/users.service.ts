@@ -6,6 +6,8 @@ import { UserUpdateReqDto } from '../models/dto/req/user-update.req.dto';
 @Injectable()
 export class UsersService {
   create(dto: UserCreateReqDto) {
+    console.log('userService');
+    throw new Error('hardcode error');
     return 'This action adds a new user';
   }
 

@@ -9,6 +9,7 @@ import { AppConfigType } from './configs/config.type';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
   const config = new DocumentBuilder()
     .setTitle('March-2024-Doc')
     .setDescription('some description')

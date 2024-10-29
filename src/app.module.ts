@@ -1,10 +1,14 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { APP_FILTER } from '@nestjs/core';
 
-import { AuthModule } from './auth/auth.module';
-import { CommentsModule } from './comments/comments.module';
+import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
 import configuration from './configs/configuration';
-import { PostsModule } from './posts/posts.module';
+import { CommentsModule } from './modules/comments/comments.module';
+import { LoggerModule } from './modules/logger/logger.module';
+import { PostgresModule } from './modules/postgres/postgres.module';
+import { PostsModule } from './modules/posts/posts.module';
+import { RedisModule } from './modules/redis/redis.module';
 import { UsersModule } from './users/users.module';
 
 @Module({
@@ -13,10 +17,18 @@ import { UsersModule } from './users/users.module';
       load: [configuration],
       isGlobal: true,
     }),
+    PostgresModule,
+    RedisModule,
+    LoggerModule,
     UsersModule,
     PostsModule,
     CommentsModule,
-    AuthModule,
+  ],
+  providers: [
+    {
+      provide: APP_FILTER,
+      useClass: GlobalExceptionFilter,
+    },
   ],
 })
 export class AppModule {}

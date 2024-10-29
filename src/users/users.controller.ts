@@ -24,7 +24,7 @@ export class UsersController {
   @ApiConflictResponse({ description: 'Conflict' })
   @Post()
   create(@Body() dto: UserCreateReqDto) {
-    console.log(dto.email);
+    console.log('controller');
     return this.usersService.create(dto);
   }
 

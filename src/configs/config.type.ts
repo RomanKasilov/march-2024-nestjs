@@ -3,6 +3,7 @@ type ConfigType = {
   database: DatabaseConfigType;
   redis: RedisConfigType;
   aws: AwsConfigType;
+  sentry: SentryConfigType;
 };
 type AppConfigType = {
   port: number;
@@ -24,6 +25,11 @@ type AwsConfigType = {
   accessKey: string;
   secretKey: string;
 };
+type SentryConfigType = {
+  dns: string;
+  env: string;
+  debug: boolean;
+};
 
 export {
   ConfigType,
@@ -31,4 +37,5 @@ export {
   DatabaseConfigType,
   RedisConfigType,
   AwsConfigType,
+  SentryConfigType,
 };
