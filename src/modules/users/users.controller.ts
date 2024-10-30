@@ -20,11 +20,10 @@ import { UsersService } from './services/users.service';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @ApiBearerAuth()
+  // @ApiBearerAuth()
   @ApiConflictResponse({ description: 'Conflict' })
   @Post()
   create(@Body() dto: UserCreateReqDto) {
-    console.log(dto.email);
     return this.usersService.create(dto);
   }
 
