@@ -45,6 +45,6 @@ export class UserBaseReqDto {
       'Password must contain at least 1 letter, 1 number, and be at least 6 characters long',
   })
   @IsNotIn(['P@ssoword!'])
-  @ApiProperty({ example: 'P@ssoword!' })
+  @ApiProperty({ example: 'P@ssoword1!' })
   password: string;
 }
