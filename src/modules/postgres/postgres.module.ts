@@ -38,7 +38,8 @@ import { ConfigType, DatabaseConfigType } from '../../configs/config.type';
               '*.js',
             ),
           ],
-          synchronize: true,
+          synchronize: false, // no synchronize, we use migrations
+          migrationsRun: false, //for autorun script "migration:run"
         };
       },
       inject: [ConfigService],
