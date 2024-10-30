@@ -12,7 +12,7 @@ import {
   Min,
 } from 'class-validator';
 
-import { TransformHelper } from '../../../../common/helpers/transform.helper';
+import { TransformHelper } from '../../../../../common/helpers/transform.helper';
 import { GenderEnum } from '../../enums/gender.enum';
 
 export class UserBaseReqDto {

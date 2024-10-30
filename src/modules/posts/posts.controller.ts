@@ -9,9 +9,9 @@ import {
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
-import { CreatePostDto } from './dto/create-post.dto';
-import { UpdatePostDto } from './dto/update-post.dto';
-import { PostsService } from './posts.service';
+import { CreatePostDto } from './models/dto/req/create-post.dto';
+import { UpdatePostDto } from './models/dto/req/update-post.dto';
+import { PostsService } from './services/posts.service';
 
 @ApiTags('posts')
 @Controller('posts')
