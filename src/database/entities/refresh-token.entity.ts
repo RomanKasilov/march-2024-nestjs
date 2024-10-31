@@ -1,9 +1,16 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
+import { TableNameEnum } from './enums/table-name.enum';
 import { CreateUpdateModel } from './models/createAt-updateAt.model';
 import { UserEntity } from './user.entity';
 
-@Entity('refresh-tokens')
+@Entity(TableNameEnum.REFRESH_TOKENS)
 export class RefreshTokenEntity extends CreateUpdateModel {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -14,6 +21,9 @@ export class RefreshTokenEntity extends CreateUpdateModel {
   @Column('text')
   deviceId: string;
 
+  @Column('uuid')
+  user_id: string;
   @ManyToOne(() => UserEntity, (entity) => entity.refreshTokens)
+  @JoinColumn({ name: 'user_id' })
   user?: UserEntity;
 }

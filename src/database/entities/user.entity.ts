@@ -1,11 +1,12 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
+import { TableNameEnum } from './enums/table-name.enum';
 import { LikeEntity } from './like.entity';
 import { CreateUpdateModel } from './models/createAt-updateAt.model';
 import { PostEntity } from './post.entity';
 import { RefreshTokenEntity } from './refresh-token.entity';
 
-@Entity('users')
+@Entity(TableNameEnum.USERS)
 export class UserEntity extends CreateUpdateModel {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -23,10 +24,10 @@ export class UserEntity extends CreateUpdateModel {
   isActive: boolean;
 
   @Column('text', { nullable: true })
-  bio: string;
+  bio?: string;
 
   @Column('text', { nullable: true })
-  image: string;
+  image?: string;
 
   @OneToMany(() => RefreshTokenEntity, (entity) => entity.user)
   refreshTokens?: RefreshTokenEntity[];

@@ -1,26 +1,33 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
-import { CreateUpdateModel } from './models/createAt-updateAt.model';
+import { TableNameEnum } from './enums/table-name.enum';
 import { PostEntity } from './post.entity';
 import { UserEntity } from './user.entity';
 
-@Entity('likes')
-export class LikeEntity extends CreateUpdateModel {
+@Entity(TableNameEnum.LIKES)
+export class LikeEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column('text')
-  title: string;
+  @CreateDateColumn()
+  created: Date;
 
-  @Column('text', { nullable: true })
-  description?: string;
-
-  @Column('text', { nullable: true })
-  body?: string;
-
+  @Column('uuid')
+  user_id: string;
   @ManyToOne(() => UserEntity, (entity) => entity.likes)
+  @JoinColumn({ name: 'user_id' })
   user?: UserEntity;
 
+  @Column('uuid')
+  post_id: string;
   @ManyToOne(() => PostEntity, (entity) => entity.likes)
+  @JoinColumn({ name: 'post_id' })
   post?: PostEntity;
 }
