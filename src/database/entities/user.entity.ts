@@ -1,6 +1,8 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
+import { CommentEntity } from './comment.entity';
 import { TableNameEnum } from './enums/table-name.enum';
+import { FollowEntity } from './follow.entity';
 import { LikeEntity } from './like.entity';
 import { CreateUpdateModel } from './models/createAt-updateAt.model';
 import { PostEntity } from './post.entity';
@@ -37,6 +39,15 @@ export class UserEntity extends CreateUpdateModel {
 
   @OneToMany(() => LikeEntity, (entity) => entity.user)
   likes?: LikeEntity[];
+
+  @OneToMany(() => CommentEntity, (comment) => comment.user)
+  comments?: CommentEntity[];
+
+  @OneToMany(() => FollowEntity, (entity) => entity.follower)
+  followers?: FollowEntity[];
+
+  @OneToMany(() => FollowEntity, (entity) => entity.following)
+  followings?: FollowEntity[];
 
   // @VirtualColumn({
   //   query: () => 'SELECT CONCAT(firstName, lastName) FROM users WHERE id = id',

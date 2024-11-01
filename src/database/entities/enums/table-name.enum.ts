@@ -1,7 +1,9 @@
 export enum TableNameEnum {
-  POSTS = 'posts',
-  LIKES = 'likes',
-  REFRESH_TOKENS = 'refresh_tokens',
-  TAGS = 'tags',
   USERS = 'users',
+  POSTS = 'posts',
+  COMMENTS = 'comments',
+  LIKES = 'likes',
+  TAGS = 'tags',
+  FOLLOW = 'follow',
+  REFRESH_TOKENS = 'refresh_tokens',
 }
