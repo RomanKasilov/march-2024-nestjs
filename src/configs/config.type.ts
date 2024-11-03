@@ -4,6 +4,7 @@ type ConfigType = {
   redis: RedisConfigType;
   aws: AwsConfigType;
   sentry: SentryConfigType;
+  jwt: JwtConfig;
 };
 type AppConfigType = {
   port: number;
@@ -30,6 +31,12 @@ type SentryConfigType = {
   env: string;
   debug: boolean;
 };
+type JwtConfig = {
+  accessSecret: string;
+  accessExpiresIn: number;
+  refreshSecret: string;
+  refreshExpiresIn: number;
+};
 export {
   ConfigType,
   AppConfigType,
@@ -37,4 +44,5 @@ export {
   RedisConfigType,
   AwsConfigType,
   SentryConfigType,
+  JwtConfig,
 };

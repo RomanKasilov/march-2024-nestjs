@@ -10,9 +10,8 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiConflictResponse, ApiTags } from '@nestjs/swagger';
 
-import { UserCreateReqDto } from './models/dto/req/user-create.req.dto';
+import { UpdateUserReqDto } from './models/dto/req/update-user.req.dto';
 import { UserQueryListReqDto } from './models/dto/req/user-query-list.req.dto';
-import { UserUpdateReqDto } from './models/dto/req/user-update.req.dto';
 import { UsersService } from './services/users.service';
 
 @ApiTags('users')
@@ -20,25 +19,14 @@ import { UsersService } from './services/users.service';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  // @ApiBearerAuth()
-  @ApiConflictResponse({ description: 'Conflict' })
-  @Post()
-  create(@Body() dto: UserCreateReqDto) {
-    return this.usersService.create(dto);
-  }
-
-  @Get()
-  findAll(@Query() query: UserQueryListReqDto) {
-    return this.usersService.findAll();
-  }
-
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(+id);
   }
+
   @ApiBearerAuth()
   @Patch(':id')
-  update(@Param('id') id: string, @Body() dto: UserUpdateReqDto) {
+  update(@Param('id') id: string, @Body() dto: UpdateUserReqDto) {
     return this.usersService.update(+id, dto);
   }
   @ApiBearerAuth()

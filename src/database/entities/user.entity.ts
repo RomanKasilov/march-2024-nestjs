@@ -22,14 +22,14 @@ export class UserEntity extends CreateUpdateModel {
   @Column('text')
   password: string;
 
-  @Column('boolean', { default: true })
-  isActive: boolean;
-
   @Column('text', { nullable: true })
   bio?: string;
 
   @Column('text', { nullable: true })
   image?: string;
+
+  @Column('boolean', { default: true })
+  isActive: boolean;
 
   @OneToMany(() => RefreshTokenEntity, (entity) => entity.user)
   refreshTokens?: RefreshTokenEntity[];

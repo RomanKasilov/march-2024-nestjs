@@ -25,7 +25,7 @@ import { ConfigType, DatabaseConfigType } from '../../configs/config.type';
               'src',
               'database',
               'entities',
-              '*.entity.ts',
+              '*.entity.js',
             ),
           ],
           migrations: [

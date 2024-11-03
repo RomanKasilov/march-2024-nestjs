@@ -16,7 +16,7 @@ export class RefreshTokenEntity extends CreateUpdateModel {
   id: string;
 
   @Column('text')
-  accessToken: string;
+  refreshToken: string;
 
   @Column('text')
   deviceId: string;
