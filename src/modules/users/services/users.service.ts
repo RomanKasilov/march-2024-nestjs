@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
+import { UserID } from '../../../common/types/entities-id.type';
 import { UserRepository } from '../../repository/services/user.repository';
 import { UpdateUserReqDto } from '../models/dto/req/update-user.req.dto';
 
@@ -7,15 +8,15 @@ import { UpdateUserReqDto } from '../models/dto/req/update-user.req.dto';
 export class UsersService {
   constructor(private userRepository: UserRepository) {}
 
-  findOne(id: number) {
+  findOne(id: UserID) {
     return `This action returns a #${id} user`;
   }
 
-  update(id: number, dto: UpdateUserReqDto) {
+  update(id: UserID, dto: UpdateUserReqDto) {
     return `This action updates a #${id} user`;
   }
 
-  remove(id: number) {
+  remove(id: UserID) {
     return `This action removes a #${id} user`;
   }
 }

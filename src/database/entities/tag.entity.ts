@@ -6,6 +6,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
+import { TagID } from '../../common/types/entities-id.type';
 import { TableNameEnum } from './enums/table-name.enum';
 import { CreateUpdateModel } from './models/createAt-updateAt.model';
 import { PostEntity } from './post.entity';
@@ -13,7 +14,7 @@ import { PostEntity } from './post.entity';
 @Entity(TableNameEnum.TAGS)
 export class TagEntity extends CreateUpdateModel {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id: TagID;
 
   @Column('text')
   name: string;

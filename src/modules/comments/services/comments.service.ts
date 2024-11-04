@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
+import { CommentID } from '../../../common/types/entities-id.type';
 import { CreateCommentDto } from '../models/dto/req/create-comment.dto';
 import { UpdateCommentDto } from '../models/dto/req/update-comment.dto';
 
@@ -13,15 +14,15 @@ export class CommentsService {
     return `This action returns all comments`;
   }
 
-  findOne(id: number) {
+  findOne(id: CommentID) {
     return `This action returns a #${id} comment`;
   }
 
-  update(id: number, updateCommentDto: UpdateCommentDto) {
+  update(id: CommentID, updateCommentDto: UpdateCommentDto) {
     return `This action updates a #${id} comment`;
   }
 
-  remove(id: number) {
+  remove(id: CommentID) {
     return `This action removes a #${id} comment`;
   }
 }

@@ -8,6 +8,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
+import { PostID, UserID } from '../../common/types/entities-id.type';
 import { CommentEntity } from './comment.entity';
 import { TableNameEnum } from './enums/table-name.enum';
 import { LikeEntity } from './like.entity';
@@ -18,7 +19,7 @@ import { UserEntity } from './user.entity';
 @Entity(TableNameEnum.POSTS)
 export class PostEntity extends CreateUpdateModel {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id: PostID;
 
   @Column('text')
   title: string;
@@ -30,7 +31,7 @@ export class PostEntity extends CreateUpdateModel {
   body?: string;
 
   @Column('uuid')
-  user_id: string;
+  user_id: UserID;
   @ManyToOne(() => UserEntity, (entity) => entity.posts)
   @JoinColumn({ name: 'user_id' })
   user?: UserEntity;
