@@ -23,6 +23,7 @@ import { UsersModule } from './modules/users/users.module';
     RedisModule,
     LoggerModule,
     RepositoryModule,
+
     AuthModule,
     UsersModule,
     PostsModule,

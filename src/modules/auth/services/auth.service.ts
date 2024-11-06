@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 
 import { RefreshTokenRepository } from '../../repository/services/refresh-token.repository';
@@ -7,6 +7,8 @@ import { UserMapper } from '../../users/services/user-mapper';
 import { SignInReqDto } from '../models/dto/req/sign-in.req.dto';
 import { SignUpReqDto } from '../models/dto/req/sign-up.req.dto';
 import { AuthResDto } from '../models/dto/res/auth.res.dto';
+import { TokenPairResDto } from '../models/dto/res/token-pair.res.dto';
+import { IUserData } from '../models/interfaces/user-data.interface';
 import { AuthCacheService } from './auth-cache.service';
 import { TokenService } from './token.service';
 
@@ -45,8 +47,79 @@ export class AuthService {
 
     return { user: UserMapper.toResDto(user), tokens };
   }
-  signIn(dto: SignInReqDto) {
-    return 'This action adds a new auth';
+  public async signIn(dto: SignInReqDto): Promise<AuthResDto> {
+    const user = await this.userRepository.findOne({
+      where: { email: dto.email },
+      select: ['id', 'password'],
+    });
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+    const isPasswordValid = await bcrypt.compare(dto.password, user.password);
+    if (!isPasswordValid) {
+      throw new UnauthorizedException();
+    }
+    const tokens = await this.tokenService.generateTokenPair({
+      userId: user.id,
+      deviceId: dto.deviceId,
+    });
+    await Promise.all([
+      this.authCacheService.saveToken(
+        tokens.accessToken,
+        user.id,
+        dto.deviceId,
+      ),
+      this.refreshTokenRepository.save(
+        this.refreshTokenRepository.create({
+          user_id: user.id,
+          deviceId: dto.deviceId,
+          refreshToken: tokens.refreshToken,
+        }),
+      ),
+    ]);
+    const userEntity = await this.userRepository.findOneBy({ id: user.id });
+
+    return { user: UserMapper.toResDto(userEntity), tokens };
+  }
+  public async signOut(userData: IUserData): Promise<void> {
+    await Promise.all([
+      this.authCacheService.deleteToken(userData.userId, userData.deviceId),
+      this.refreshTokenRepository.delete({
+        user_id: userData.userId,
+        deviceId: userData.deviceId,
+      }),
+    ]);
+  }
+  public async refresh(userData: IUserData): Promise<TokenPairResDto> {
+    await Promise.all([
+      //delete all user`s access-tokens too
+      this.authCacheService.deleteToken(userData.userId, userData.deviceId),
+      this.refreshTokenRepository.delete({
+        user_id: userData.userId,
+        deviceId: userData.deviceId,
+      }),
+    ]);
+
+    const tokens = await this.tokenService.generateTokenPair({
+      userId: userData.userId,
+      deviceId: userData.deviceId,
+    });
+    await Promise.all([
+      this.authCacheService.saveToken(
+        tokens.accessToken,
+        userData.userId,
+        userData.deviceId,
+      ),
+      this.refreshTokenRepository.save(
+        this.refreshTokenRepository.create({
+          user_id: userData.userId,
+          deviceId: userData.deviceId,
+          refreshToken: tokens.refreshToken,
+        }),
+      ),
+    ]);
+
+    return tokens;
   }
   private async isEmailNotExistOrThrow(email: string): Promise<void> {
     const user = await this.userRepository.findOneBy({ email });

@@ -1,22 +1,26 @@
 import { Injectable } from '@nestjs/common';
 
 import { UserID } from '../../../common/types/entities-id.type';
+import { UserEntity } from '../../../database/entities/user.entity';
 import { UserRepository } from '../../repository/services/user.repository';
 import { UpdateUserReqDto } from '../models/dto/req/update-user.req.dto';
 
 @Injectable()
 export class UsersService {
   constructor(private userRepository: UserRepository) {}
-
-  findOne(id: UserID) {
-    return `This action returns a #${id} user`;
+  public async findMe(userId: UserID) {
+    return `This action returns "me" user`;
   }
 
-  update(id: UserID, dto: UpdateUserReqDto) {
-    return `This action updates a #${id} user`;
+  public async updateMe(userId: UserID, dto: UpdateUserReqDto) {
+    return `This action updates a #${userId} user`;
   }
 
-  remove(id: UserID) {
-    return `This action removes a #${id} user`;
+  public async removeMe(userId: UserID) {
+    return `This action removes a #${userId} user`;
+  }
+
+  public async findOne(userId: UserID): Promise<UserEntity> {
+    return await this.userRepository.findOneBy({ id: userId });
   }
 }
