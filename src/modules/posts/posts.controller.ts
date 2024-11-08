@@ -7,40 +7,48 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 import { PostID } from '../../common/types/entities-id.type';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { IUserData } from '../auth/models/interfaces/user-data.interface';
 import { CreatePostDto } from './models/dto/req/create-post.dto';
 import { UpdatePostDto } from './models/dto/req/update-post.dto';
+import { PostResDto } from './models/dto/res/post.res.dto';
+import { PostsMapper } from './services/posts.mapper';
 import { PostsService } from './services/posts.service';
 
 @ApiTags('posts')
+@ApiBearerAuth()
 @Controller('posts')
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
   @Post()
-  create(@Body() createPostDto: CreatePostDto) {
-    return this.postsService.create(createPostDto);
+  public async create(
+    @CurrentUser() userData: IUserData,
+    @Body() dto: CreatePostDto,
+  ): Promise<PostResDto> {
+    const result = await this.postsService.create(dto, userData.userId);
+    return PostsMapper.toResDto(result);
   }
 
-  @Get()
-  findAll() {
-    return this.postsService.findAll();
+  @Get(':postId')
+  public async findOne(@Param('postId') postId: PostID) {
+    return await this.postsService.findOne(postId);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: PostID) {
-    return this.postsService.findOne(id);
+  @Patch(':postId')
+  public async update(
+    @CurrentUser() userData: IUserData,
+    @Param('postId') postId: PostID,
+    @Body() dto: UpdatePostDto,
+  ) {
+    return await this.postsService.update(postId, dto, userData.userId);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: PostID, @Body() updatePostDto: UpdatePostDto) {
-    return this.postsService.update(id, updatePostDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: PostID) {
-    return this.postsService.remove(id);
+  @Delete(':postId')
+  public async remove(@Param('postId') postId: PostID) {
+    return await this.postsService.remove(postId);
   }
 }

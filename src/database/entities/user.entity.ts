@@ -32,6 +32,9 @@ export class UserEntity extends CreateUpdateModel {
   @Column('boolean', { default: true })
   isActive: boolean;
 
+  @Column('timestamp', { nullable: true })
+  deleted?: Date;
+
   @OneToMany(() => RefreshTokenEntity, (entity) => entity.user)
   refreshTokens?: RefreshTokenEntity[];
 

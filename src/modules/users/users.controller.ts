@@ -6,6 +6,7 @@ import {
   Param,
   ParseUUIDPipe,
   Patch,
+  Post,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
@@ -25,8 +26,11 @@ export class UsersController {
 
   @ApiBearerAuth()
   @Get('me')
-  public async findMe(@CurrentUser() currentUserData: IUserData) {
-    return await this.usersService.findMe(currentUserData.userId);
+  public async findMe(
+    @CurrentUser() currentUserData: IUserData,
+  ): Promise<BaseUserResDto> {
+    const result = await this.usersService.findMe(currentUserData.userId);
+    return UserMapper.toResDto(result);
   }
 
   @ApiBearerAuth()
@@ -34,14 +38,20 @@ export class UsersController {
   public async updateMe(
     @CurrentUser() currentUserData: IUserData,
     @Body() dto: UpdateUserReqDto,
-  ) {
-    return await this.usersService.updateMe(currentUserData.userId, dto);
+  ): Promise<BaseUserResDto> {
+    const result = await this.usersService.updateMe(
+      currentUserData.userId,
+      dto,
+    );
+    return UserMapper.toResDto(result);
   }
 
   @ApiBearerAuth()
   @Delete('me')
-  public async removeMe(@CurrentUser() currentUserData: IUserData) {
-    return await this.usersService.removeMe(currentUserData.userId);
+  public async removeMe(
+    @CurrentUser() currentUserData: IUserData,
+  ): Promise<void> {
+    await this.usersService.removeMe(currentUserData.userId);
   }
 
   @SkipAuth()
@@ -51,5 +61,23 @@ export class UsersController {
   ): Promise<BaseUserResDto> {
     const result = await this.usersService.findOne(id);
     return UserMapper.toResDto(result);
+  }
+
+  @ApiBearerAuth()
+  @Post(':userId/follow')
+  public async follow(
+    @Param('userId', ParseUUIDPipe) followingId: UserID,
+    @CurrentUser() userData: IUserData,
+  ): Promise<void> {
+    await this.usersService.follow(userData.userId, followingId);
+  }
+
+  @ApiBearerAuth()
+  @Delete(':userId/follow')
+  public async unfollow(
+    @Param('userId', ParseUUIDPipe) followingId: UserID,
+    @CurrentUser() userData: IUserData,
+  ): Promise<void> {
+    await this.usersService.unfollow(userData.userId, followingId);
   }
 }

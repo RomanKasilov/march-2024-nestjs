@@ -1,28 +1,48 @@
 import { Injectable } from '@nestjs/common';
+import { In } from 'typeorm';
 
-import { PostID } from '../../../common/types/entities-id.type';
+import { PostID, UserID } from '../../../common/types/entities-id.type';
+import { PostEntity } from '../../../database/entities/post.entity';
+import { TagEntity } from '../../../database/entities/tag.entity';
+import { PostRepository } from '../../repository/services/post.repository';
+import { TagRepository } from '../../repository/services/tag.repository';
 import { CreatePostDto } from '../models/dto/req/create-post.dto';
 import { UpdatePostDto } from '../models/dto/req/update-post.dto';
 
 @Injectable()
 export class PostsService {
-  create(createPostDto: CreatePostDto) {
-    return 'This action adds a new post';
+  constructor(
+    private readonly postRepository: PostRepository,
+    private readonly tagRepository: TagRepository,
+  ) {}
+
+  public async create(dto: CreatePostDto, userId: UserID): Promise<PostEntity> {
+    const tags = await this.createTags(dto.tags);
+    return await this.postRepository.save(
+      this.postRepository.create({ ...dto, tags, user_id: userId }),
+    );
   }
 
-  findAll() {
-    return `This action returns all posts`;
+  public async findOne(postId: PostID) {
+    return `This action returns a #${postId} post`;
   }
 
-  findOne(id: PostID) {
-    return `This action returns a #${id} post`;
+  public async update(postId: PostID, dto: UpdatePostDto, userId: UserID) {
+    return `This action updates a #${postId} post`;
   }
 
-  update(id: PostID, updatePostDto: UpdatePostDto) {
-    return `This action updates a #${id} post`;
+  public async remove(postId: PostID) {
+    return `This action removes a #${postId} post`;
   }
+  private async createTags(tags: string[]): Promise<TagEntity[]> {
+    if (!tags || !tags.length) return [];
 
-  remove(id: PostID) {
-    return `This action removes a #${id} post`;
+    const entities = await this.tagRepository.findBy({ name: In(tags) });
+    const existingTags = entities.map((tag) => tag.name);
+    const newTags = tags.filter((tag) => !existingTags.includes(tag));
+    const newEntities = await this.tagRepository.save(
+      newTags.map((tag) => this.tagRepository.create({ name: tag })),
+    );
+    return [...entities, ...newEntities];
   }
 }
