@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
@@ -13,8 +14,10 @@ import { PostID } from '../../common/types/entities-id.type';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { IUserData } from '../auth/models/interfaces/user-data.interface';
 import { CreatePostDto } from './models/dto/req/create-post.dto';
+import { PostsQueryDto } from './models/dto/req/posts-query.dto';
 import { UpdatePostDto } from './models/dto/req/update-post.dto';
 import { PostResDto } from './models/dto/res/post.res.dto';
+import { PostListResDto } from './models/dto/res/post-list.res.dto';
 import { PostsMapper } from './services/posts.mapper';
 import { PostsService } from './services/posts.service';
 
@@ -33,9 +36,13 @@ export class PostsController {
     return PostsMapper.toResDto(result);
   }
 
-  @Get(':postId')
-  public async findOne(@Param('postId') postId: PostID) {
-    return await this.postsService.findOne(postId);
+  @Get()
+  public async findAll(
+    @CurrentUser() userData: IUserData,
+    @Query() query: PostsQueryDto,
+  ): Promise<PostListResDto> {
+    const [entities, total] = await this.postsService.findAll(userData, query);
+    return PostsMapper.toResDtoList(entities, total, query);
   }
 
   @Patch(':postId')

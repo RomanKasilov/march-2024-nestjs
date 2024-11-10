@@ -4,9 +4,11 @@ import { In } from 'typeorm';
 import { PostID, UserID } from '../../../common/types/entities-id.type';
 import { PostEntity } from '../../../database/entities/post.entity';
 import { TagEntity } from '../../../database/entities/tag.entity';
+import { IUserData } from '../../auth/models/interfaces/user-data.interface';
 import { PostRepository } from '../../repository/services/post.repository';
 import { TagRepository } from '../../repository/services/tag.repository';
 import { CreatePostDto } from '../models/dto/req/create-post.dto';
+import { PostsQueryDto } from '../models/dto/req/posts-query.dto';
 import { UpdatePostDto } from '../models/dto/req/update-post.dto';
 
 @Injectable()
@@ -23,8 +25,11 @@ export class PostsService {
     );
   }
 
-  public async findOne(postId: PostID) {
-    return `This action returns a #${postId} post`;
+  public async findAll(
+    userData: IUserData,
+    query: PostsQueryDto,
+  ): Promise<[PostEntity[], number]> {
+    return await this.postRepository.findAll(userData, query);
   }
 
   public async update(postId: PostID, dto: UpdatePostDto, userId: UserID) {
