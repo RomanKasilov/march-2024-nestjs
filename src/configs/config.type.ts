@@ -25,6 +25,10 @@ type RedisConfigType = {
 type AwsConfigType = {
   accessKey: string;
   secretKey: string;
+  bucketName: string;
+  region: string;
+  ACL: string;
+  endpoint: string;
 };
 type SentryConfigType = {
   dsn: string;

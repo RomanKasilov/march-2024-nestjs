@@ -45,6 +45,15 @@ export class PostsController {
     return PostsMapper.toResDtoList(entities, total, query);
   }
 
+  @Get(':postId')
+  public async findOne(
+    @CurrentUser() userData: IUserData,
+    @Param('postId') postId: PostID,
+  ): Promise<PostResDto> {
+    const result = await this.postsService.findOne(userData, postId);
+    return PostsMapper.toResDto(result);
+  }
+
   @Patch(':postId')
   public async update(
     @CurrentUser() userData: IUserData,

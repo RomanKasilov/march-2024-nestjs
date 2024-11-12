@@ -5,7 +5,6 @@ import { nodeProfilingIntegration } from '@sentry/profiling-node';
 
 import { ConfigType, SentryConfigType } from '../../configs/config.type';
 
-@Global()
 @Injectable()
 export class LoggerService {
   private readonly isLocal: boolean;

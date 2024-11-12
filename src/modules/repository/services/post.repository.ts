@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 
+import { PostID } from '../../../common/types/entities-id.type';
 import { PostEntity } from '../../../database/entities/post.entity';
 import { IUserData } from '../../auth/models/interfaces/user-data.interface';
 import { PostsQueryDto } from '../../posts/models/dto/req/posts-query.dto';
@@ -18,6 +19,12 @@ export class PostRepository extends Repository<PostEntity> {
     const qb = this.createQueryBuilder('post');
     qb.leftJoinAndSelect('post.tags', 'tag');
     qb.leftJoinAndSelect('post.user', 'user');
+    qb.leftJoinAndSelect(
+      'user.followings',
+      'following',
+      'following.follower_id = :userId',
+      { userId: userData.userId },
+    );
 
     if (query.search) {
       qb.andWhere('CONCAT(post.title, post.description) ILIKE :search');
@@ -31,5 +38,22 @@ export class PostRepository extends Repository<PostEntity> {
     qb.skip(query.offset);
 
     return await qb.getManyAndCount();
+  }
+
+  public async getById(
+    userData: IUserData,
+    postId: PostID,
+  ): Promise<PostEntity> {
+    const qb = this.createQueryBuilder('post');
+    qb.leftJoinAndSelect('post.tags', 'tag');
+    qb.leftJoinAndSelect('post.user', 'user');
+    qb.leftJoinAndSelect(
+      'user.followings',
+      'following',
+      'following.follower_id = :userId',
+      { userId: userData.userId },
+    );
+    qb.where('post.id = :postId', { postId });
+    return await qb.getOne();
   }
 }

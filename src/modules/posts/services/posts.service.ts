@@ -32,6 +32,13 @@ export class PostsService {
     return await this.postRepository.findAll(userData, query);
   }
 
+  public async findOne(
+    userData: IUserData,
+    postId: PostID,
+  ): Promise<PostEntity> {
+    return await this.postRepository.getById(userData, postId);
+  }
+
   public async update(postId: PostID, dto: UpdatePostDto, userId: UserID) {
     return `This action updates a #${postId} post`;
   }
