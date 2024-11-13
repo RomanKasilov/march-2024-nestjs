@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
 import { PostEntity } from '../../../database/entities/post.entity';
+import { TagEntity } from '../../../database/entities/tag.entity';
 import { UserMapper } from '../../users/services/user-mapper';
 import { PostsQueryDto } from '../models/dto/req/posts-query.dto';
 import { PostResDto } from '../models/dto/res/post.res.dto';
@@ -16,7 +17,8 @@ export class PostsMapper {
       body: data.body,
       created: data.created,
       updated: data.updated,
-      tags: data.tags ? data.tags.map((tag) => tag.name) : [],
+      isLiked: !!data.likes?.length,
+      tags: data.tags ? data.tags.map((tag: TagEntity) => tag.name) : [],
       user: data.user ? UserMapper.toResDto(data.user) : null,
     };
   }

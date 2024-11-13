@@ -47,5 +47,7 @@ export class PostResDto {
   })
   tags: string[];
 
+  isLiked: boolean;
+
   user?: BaseUserResDto;
 }

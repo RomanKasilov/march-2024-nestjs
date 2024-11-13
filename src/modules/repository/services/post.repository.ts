@@ -19,12 +19,13 @@ export class PostRepository extends Repository<PostEntity> {
     const qb = this.createQueryBuilder('post');
     qb.leftJoinAndSelect('post.tags', 'tag');
     qb.leftJoinAndSelect('post.user', 'user');
+    qb.setParameter('userId', userData.userId);
     qb.leftJoinAndSelect(
       'user.followings',
       'following',
       'following.follower_id = :userId',
-      { userId: userData.userId },
     );
+    qb.leftJoinAndSelect('post.likes', 'like', 'like.user_id = :userId');
 
     if (query.search) {
       qb.andWhere('CONCAT(post.title, post.description) ILIKE :search');
@@ -47,12 +48,14 @@ export class PostRepository extends Repository<PostEntity> {
     const qb = this.createQueryBuilder('post');
     qb.leftJoinAndSelect('post.tags', 'tag');
     qb.leftJoinAndSelect('post.user', 'user');
+    qb.setParameter('userId', userData.userId);
     qb.leftJoinAndSelect(
       'user.followings',
       'following',
       'following.follower_id = :userId',
-      { userId: userData.userId },
     );
+    qb.leftJoinAndSelect('article.likes', 'like', 'like.user_id = :userId');
+
     qb.where('post.id = :postId', { postId });
     return await qb.getOne();
   }

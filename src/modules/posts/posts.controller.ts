@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseUUIDPipe,
   Patch,
   Post,
   Query,
@@ -48,7 +49,7 @@ export class PostsController {
   @Get(':postId')
   public async findOne(
     @CurrentUser() userData: IUserData,
-    @Param('postId') postId: PostID,
+    @Param('postId', ParseUUIDPipe) postId: PostID,
   ): Promise<PostResDto> {
     const result = await this.postsService.findOne(userData, postId);
     return PostsMapper.toResDto(result);
@@ -57,14 +58,24 @@ export class PostsController {
   @Patch(':postId')
   public async update(
     @CurrentUser() userData: IUserData,
-    @Param('postId') postId: PostID,
+    @Param('postId', ParseUUIDPipe) postId: PostID,
     @Body() dto: UpdatePostDto,
   ) {
     return await this.postsService.update(postId, dto, userData.userId);
   }
 
-  @Delete(':postId')
-  public async remove(@Param('postId') postId: PostID) {
-    return await this.postsService.remove(postId);
+  @Post(':/postId/like')
+  public async like(
+    @CurrentUser() userData: IUserData,
+    @Param('postId', ParseUUIDPipe) postId: PostID,
+  ): Promise<void> {
+    await this.postsService.like(postId, userData.userId);
+  }
+  @Delete(':/postId/like')
+  public async unlike(
+    @CurrentUser() userData: IUserData,
+    @Param('postId', ParseUUIDPipe) postId: PostID,
+  ): Promise<void> {
+    await this.postsService.unlike(postId, userData.userId);
   }
 }
