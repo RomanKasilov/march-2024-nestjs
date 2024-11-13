@@ -64,14 +64,14 @@ export class PostsController {
     return await this.postsService.update(postId, dto, userData.userId);
   }
 
-  @Post(':/postId/like')
+  @Post(':postId/like')
   public async like(
     @CurrentUser() userData: IUserData,
     @Param('postId', ParseUUIDPipe) postId: PostID,
   ): Promise<void> {
     await this.postsService.like(postId, userData.userId);
   }
-  @Delete(':/postId/like')
+  @Delete(':postId/like')
   public async unlike(
     @CurrentUser() userData: IUserData,
     @Param('postId', ParseUUIDPipe) postId: PostID,
