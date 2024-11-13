@@ -11,7 +11,8 @@ export class UserMapper {
       email: user.email,
       bio: user.bio,
       image: `${process.env.AWS_S3_ENDPOINT}/${user.image}`,
-      isFollowed: user.followings?.length > 0 || false,
+      // isFollowed: user.followings?.length > 0 || false,
+      isFollowed: !!user.followings?.length,
     };
   }
   public static toIUserData(
