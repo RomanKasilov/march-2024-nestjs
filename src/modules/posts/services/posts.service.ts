@@ -3,7 +3,8 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { In } from 'typeorm';
+import { InjectEntityManager } from '@nestjs/typeorm';
+import { EntityManager, In } from 'typeorm';
 
 import { PostID, UserID } from '../../../common/types/entities-id.type';
 import { PostEntity } from '../../../database/entities/post.entity';
@@ -11,7 +12,6 @@ import { TagEntity } from '../../../database/entities/tag.entity';
 import { IUserData } from '../../auth/models/interfaces/user-data.interface';
 import { LikeRepository } from '../../repository/services/like.repository';
 import { PostRepository } from '../../repository/services/post.repository';
-import { TagRepository } from '../../repository/services/tag.repository';
 import { CreatePostDto } from '../models/dto/req/create-post.dto';
 import { PostsQueryDto } from '../models/dto/req/posts-query.dto';
 import { UpdatePostDto } from '../models/dto/req/update-post.dto';
@@ -20,14 +20,22 @@ import { UpdatePostDto } from '../models/dto/req/update-post.dto';
 export class PostsService {
   constructor(
     private readonly postRepository: PostRepository,
-    private readonly tagRepository: TagRepository,
     private readonly likeRepository: LikeRepository,
+    @InjectEntityManager()
+    private readonly entityManager: EntityManager,
   ) {}
 
   public async create(dto: CreatePostDto, userId: UserID): Promise<PostEntity> {
-    const tags = await this.createTags(dto.tags);
-    return await this.postRepository.save(
-      this.postRepository.create({ ...dto, tags, user_id: userId }),
+    return await this.entityManager.transaction(
+      'SERIALIZABLE',
+      async (manager: EntityManager) => {
+        const postRepository = manager.getRepository(PostEntity);
+        const tags = await this.createTags(dto.tags, manager);
+
+        return await postRepository.save(
+          postRepository.create({ ...dto, tags, user_id: userId }),
+        );
+      },
     );
   }
 
@@ -42,7 +50,12 @@ export class PostsService {
     userData: IUserData,
     postId: PostID,
   ): Promise<PostEntity> {
-    return await this.postRepository.getById(userData, postId);
+    return await this.entityManager.transaction(
+      'SERIALIZABLE',
+      async (em: EntityManager) => {
+        return await this.postRepository.getById(userData, postId, em);
+      },
+    );
   }
 
   public async update(postId: PostID, dto: UpdatePostDto, userId: UserID) {
@@ -50,11 +63,8 @@ export class PostsService {
   }
 
   public async like(postId: PostID, userId: UserID): Promise<void> {
-    const post = await this.postRepository.findOneBy({ id: postId });
-    // if (!post) {
-    //   throw new NotFoundException('Post not found');
-    // }
     await this.isPostExistOrThrow(postId);
+
     const like = await this.likeRepository.findOneBy({
       post_id: postId,
       user_id: userId,
@@ -69,6 +79,7 @@ export class PostsService {
 
   public async unlike(postId: PostID, userId: UserID): Promise<void> {
     await this.isPostExistOrThrow(postId);
+
     const like = await this.likeRepository.findOneBy({
       post_id: postId,
       user_id: userId,
@@ -78,18 +89,23 @@ export class PostsService {
     }
     await this.likeRepository.remove(like);
   }
-  private async createTags(tags: string[]): Promise<TagEntity[]> {
+
+  private async createTags(
+    tags: string[],
+    manager: EntityManager,
+  ): Promise<TagEntity[]> {
     if (!tags || !tags.length) return [];
 
-    const entities = await this.tagRepository.findBy({ name: In(tags) });
+    const tagRepository = manager.getRepository(TagEntity);
+    const entities = await tagRepository.findBy({ name: In(tags) });
     const existingTags = entities.map((tag) => tag.name);
     const newTags = tags.filter((tag) => !existingTags.includes(tag));
-    const newEntities = await this.tagRepository.save(
-      newTags.map((tag) => this.tagRepository.create({ name: tag })),
+    const newEntities = await tagRepository.save(
+      newTags.map((tag) => tagRepository.create({ name: tag })),
     );
     return [...entities, ...newEntities];
   }
-  private async isPostExistOrThrow(postId: PostID) {
+  private async isPostExistOrThrow(postId: PostID): Promise<void> {
     const post = await this.postRepository.findOneBy({ id: postId });
     if (!post) {
       throw new NotFoundException('Post not found');

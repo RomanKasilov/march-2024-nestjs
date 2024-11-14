@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, EntityManager, Repository } from 'typeorm';
 
 import { PostID } from '../../../common/types/entities-id.type';
 import { PostEntity } from '../../../database/entities/post.entity';
@@ -44,8 +44,10 @@ export class PostRepository extends Repository<PostEntity> {
   public async getById(
     userData: IUserData,
     postId: PostID,
+    em?: EntityManager,
   ): Promise<PostEntity> {
-    const qb = this.createQueryBuilder('post');
+    const repository = em ? em.getRepository(PostEntity) : this;
+    const qb = repository.createQueryBuilder('post');
     qb.leftJoinAndSelect('post.tags', 'tag');
     qb.leftJoinAndSelect('post.user', 'user');
     qb.setParameter('userId', userData.userId);
@@ -54,7 +56,7 @@ export class PostRepository extends Repository<PostEntity> {
       'following',
       'following.follower_id = :userId',
     );
-    qb.leftJoinAndSelect('article.likes', 'like', 'like.user_id = :userId');
+    qb.leftJoinAndSelect('post.likes', 'like', 'like.user_id = :userId');
 
     qb.where('post.id = :postId', { postId });
     return await qb.getOne();
